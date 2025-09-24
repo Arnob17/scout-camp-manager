@@ -21,7 +21,7 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onLogin }) => {
     setError('');
 
     try {
-      const endpoint = isLogin ? '/api/admin/login' : '/api/admin/register';
+      const endpoint = isLogin ? 'https://camp-backend-production.up.railway.app/api/admin/login' : 'https://camp-backend-production.up.railway.app/api/admin/register';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

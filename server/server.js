@@ -310,9 +310,10 @@ app.get("/api/food/scout/:scoutId", authenticateToken, async (req, res) => {
   }
 });
 
-// Serve React app for all other routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dist", "index.html"));
+// Serve React app for all other routes (must be last)
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next(); // skip API
+  res.send("hello world");
 });
 
 app.listen(PORT, () => {

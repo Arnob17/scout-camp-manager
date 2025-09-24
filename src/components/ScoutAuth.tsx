@@ -19,7 +19,7 @@ const ScoutAuth: React.FC<ScoutAuthProps> = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('/api/scout/login', {
+      const response = await fetch('https://camp-backend-production.up.railway.app/api/scout/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -104,7 +104,7 @@ const ScoutAuth: React.FC<ScoutAuthProps> = ({ onLogin }) => {
 
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-blue-800 text-sm">
-            <strong>Note:</strong> Scout accounts are created by camp administrators. 
+            <strong>Note:</strong> Scout accounts are created by camp administrators.
             If you don't have login credentials, please contact your scout leader.
           </p>
         </div>

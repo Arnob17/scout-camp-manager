@@ -100,7 +100,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const fetchScouts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/scouts', {
+      const response = await fetch('https://camp-backend-production.up.railway.app/api/scouts', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -115,7 +115,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
   const fetchCampInfo = async () => {
     try {
-      const response = await fetch('/api/camp-info');
+      const response = await fetch('https://camp-backend-production.up.railway.app/api/camp-info');
       const data = await response.json();
       setCampInfo(data);
       setCampSettings({
@@ -133,7 +133,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const fetchFoodEntries = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/food/date/${selectedDate}`, {
+      const response = await fetch(`https://camp-backend-production.up.railway.app/api/food/date/${selectedDate}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -153,7 +153,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/scout/register', {
+      const response = await fetch('https://camp-backend-production.up.railway.app/api/scout/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/camp-info', {
+      const response = await fetch('https://camp-backend-production.up.railway.app/api/camp-info', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -233,7 +233,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/food', {
+      const response = await fetch('https://camp-backend-production.up.railway.app/api/food', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -268,7 +268,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const handleUpdateFoodStatus = async (foodId: number, received: boolean) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/food/${foodId}/status`, {
+      const response = await fetch(`https://camp-backend-production.up.railway.app/api/food/${foodId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

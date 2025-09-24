@@ -20,7 +20,7 @@ const LandingPage: React.FC = () => {
 
   const fetchCampInfo = async () => {
     try {
-      const response = await fetch('/api/camp-info');
+      const response = await fetch('https://camp-backend-production.up.railway.app/api/camp-info');
       const data = await response.json();
       setCampInfo(data);
     } catch (error) {
