@@ -29,17 +29,18 @@ const createTables = () => {
   // Scouts table
   const createScoutsTable = db.prepare(`
     CREATE TABLE IF NOT EXISTS scouts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      name TEXT NOT NULL,
-      age INTEGER,
-      phone TEXT,
-      emergency_contact TEXT,
-      image_url TEXT,
-      registered_by INTEGER,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (registered_by) REFERENCES admins (id)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    name TEXT NOT NULL,
+    age INTEGER,
+    phone TEXT,
+    emergency_contact TEXT,
+    image_url TEXT,
+    scout_type TEXT DEFAULT 'scout',
+    registered_by INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (registered_by) REFERENCES admins (id)
     )
   `);
 
@@ -110,33 +111,37 @@ const dbOps = {
 
   // Scout operations
   createScout: (scoutData, adminId) => {
-    const hashedPassword = bcrypt.hashSync(scoutData.password, 10);
     const stmt = db.prepare(`
-      INSERT INTO scouts (email, password, name, age, phone, emergency_contact, image_url, registered_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+    INSERT INTO scouts (email, password, name, age, phone, emergency_contact, image_url, scout_type, registered_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
     return stmt.run(
       scoutData.email,
-      hashedPassword,
+      scoutData.password, // Make sure to hash this password
       scoutData.name,
-      scoutData.age,
-      scoutData.phone,
-      scoutData.emergency_contact,
-      scoutData.image_url || "",
+      scoutData.age || null,
+      scoutData.phone || null,
+      scoutData.emergency_contact || null,
+      scoutData.image_url || null,
+      scoutData.scout_type || "scout", // Default to 'scout' if not provided
       adminId
     );
+  },
+
+  // And update the scout retrieval to include scout_type
+  getAllScouts: () => {
+    const stmt = db.prepare(`
+    SELECT id, email, name, age, phone, emergency_contact, image_url, scout_type, created_at 
+    FROM scouts 
+    ORDER BY created_at DESC
+  `);
+    return stmt.all();
   },
 
   findScoutByEmail: (email) => {
     const stmt = db.prepare("SELECT * FROM scouts WHERE email = ?");
     return stmt.get(email);
-  },
-
-  getAllScouts: () => {
-    const stmt = db.prepare(
-      "SELECT id, name, email, age, phone, emergency_contact, image_url, created_at FROM scouts"
-    );
-    return stmt.all();
   },
 
   // Camp operations

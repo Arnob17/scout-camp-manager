@@ -156,7 +156,7 @@ app.post("/api/scout/login", async (req, res) => {
       message: "Login successful",
       token,
       scout: {
-        id: `F-C-${scout.id}`,
+        id: `SFC-${scout.id}`,
         email: scout.email,
         name: scout.name,
         age: scout.age,

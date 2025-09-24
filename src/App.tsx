@@ -6,6 +6,7 @@ import AdminAuth from './components/AdminAuth';
 import AdminDashboard from './components/AdminDashboard';
 import ScoutAuth from './components/ScoutAuth';
 import ScoutProfile from './components/ScoutProfile';
+import Footer from './components/Footer';
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -57,57 +58,59 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={handleLogout} />
-        
+
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          
-          <Route 
-            path="/admin" 
+
+          <Route
+            path="/admin"
             element={
               !user || user.role !== 'admin' ? (
                 <AdminAuth onLogin={handleLogin} />
               ) : (
                 <Navigate to="/admin/dashboard" replace />
               )
-            } 
+            }
           />
-          
-          <Route 
-            path="/admin/dashboard" 
+
+          <Route
+            path="/admin/dashboard"
             element={
               user && user.role === 'admin' ? (
                 <AdminDashboard user={user} />
               ) : (
                 <Navigate to="/admin" replace />
               )
-            } 
+            }
           />
-          
-          <Route 
-            path="/scout/login" 
+
+          <Route
+            path="/scout/login"
             element={
               !user || user.role !== 'scout' ? (
                 <ScoutAuth onLogin={handleLogin} />
               ) : (
                 <Navigate to="/scout/profile" replace />
               )
-            } 
+            }
           />
-          
-          <Route 
-            path="/scout/profile" 
+
+          <Route
+            path="/scout/profile"
             element={
               user && user.role === 'scout' ? (
                 <ScoutProfile user={user} />
               ) : (
                 <Navigate to="/scout/login" replace />
               )
-            } 
+            }
           />
-          
+
           {/* Redirect any unknown routes to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+
+        <Footer />
       </div>
     </Router>
   );

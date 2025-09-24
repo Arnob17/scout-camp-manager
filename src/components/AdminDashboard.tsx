@@ -86,7 +86,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     { value: 'cub', label: 'Cub Scout' },
     { value: 'scout', label: 'Scout' },
     { value: 'rover', label: 'Rover' },
-    { value: 'venturer', label: 'Venturer' },
+    { value: 'venturer', label: 'Parents' },
     { value: 'leader', label: 'Leader' },
     { value: 'volunteer', label: 'Volunteer' }
   ];
@@ -730,8 +730,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                                       <button
                                         onClick={() => handleUpdateFoodStatus(entry.id, !entry.received)}
                                         className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm ${entry.received
-                                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                          : 'bg-red-100 text-red-800 hover:bg-red-200'
                                           }`}
                                       >
                                         {entry.received ? (

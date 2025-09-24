@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MapPin, Calendar, Users, Tent } from 'lucide-react';
-
+import logo from "../public/logo.jpg"
+import camp from "../public/camp.png"
 interface CampInfo {
   camp_name: string;
   camp_date: string;
@@ -38,10 +39,10 @@ const LandingPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-green-800 to-green-600 text-white">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
+      <div className="relative text-white">
+        <img src={camp} className="absolute inset-0 w-full h-full object-cover" />
         <div className="relative container mx-auto px-4 py-24">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl font-bold mb-6">
@@ -117,7 +118,7 @@ const LandingPage: React.FC = () => {
               <div className="text-green-200">Max Participants</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">7</div>
+              <div className="text-4xl font-bold mb-2">4</div>
               <div className="text-green-200">Days of Adventure</div>
             </div>
             <div>
@@ -141,7 +142,7 @@ const LandingPage: React.FC = () => {
           <p className="text-gray-600">Manage camp details and scout registrations</p>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
