@@ -35,14 +35,14 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                 >
                   Home
                 </Link>
-                {/* <Link
+                <Link
                   to="/admin"
                   className={`flex items-center space-x-1 hover:text-green-200 transition-colors ${location.pathname.startsWith('/admin') ? 'text-green-200' : ''
                     }`}
                 >
                   <Shield size={16} />
                   <span>Admin</span>
-                </Link> */}
+                </Link>
                 <Link
                   to="/scout/login"
                   className={`flex items-center space-x-1 hover:text-green-200 transition-colors ${location.pathname.startsWith('/scout') ? 'text-green-200' : ''
