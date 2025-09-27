@@ -26,14 +26,14 @@ function addColumnIfNotExists(table, column, definition) {
 
 try {
   // List of new columns to add
-  addColumnIfNotExists("scouts", "bsID", "TEXT NOT NULL");
-  addColumnIfNotExists("scouts", "unitName", "TEXT NOT NULL");
-  addColumnIfNotExists("scouts", "name_bangla", "TEXT NOT NULL");
+  // addColumnIfNotExists("scouts", "bsID", "TEXT NOT NULL");
+  // addColumnIfNotExists("scouts", "unitName", "TEXT NOT NULL");
+  // addColumnIfNotExists("scouts", "name_bangla", "TEXT NOT NULL");
   // addColumnIfNotExists("scouts", "age", "INTEGER");
-  addColumnIfNotExists("scouts", "fatherName", "TEXT NOT NULL");
-  addColumnIfNotExists("scouts", "motherName", "TEXT NOT NULL");
-  addColumnIfNotExists("scouts", "address", "TEXT NOT NULL");
-  addColumnIfNotExists("scouts", "bloodGroup", "TEXT NOT NULL");
+  addColumnIfNotExists("scouts", "payment_amount", "TEXT NOT NULL");
+  // addColumnIfNotExists("scouts", "motherName", "TEXT NOT NULL");
+  // addColumnIfNotExists("scouts", "address", "TEXT NOT NULL");
+  // addColumnIfNotExists("scouts", "bloodGroup", "TEXT NOT NULL");
   // addColumnIfNotExists("scouts", "phone", "TEXT NOT NULL");
   // addColumnIfNotExists("scouts", "emergency_contact", "TEXT");
   // addColumnIfNotExists("scouts", "image_url", "TEXT");

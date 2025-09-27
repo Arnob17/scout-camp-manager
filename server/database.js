@@ -44,6 +44,7 @@ const createTables = () => {
     phone TEXT NOT NULL,
     emergency_contact TEXT,
     image_url TEXT,
+    payment_amount TEXT NOT NULL,
     scout_type TEXT DEFAULT 'scout',
     registered_by INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -119,7 +120,7 @@ const dbOps = {
   // Scout operations
   createScout: (scoutData, adminId) => {
     const stmt = db.prepare(`
-    INSERT INTO scouts (email, password, name, name_bangla, age, bsID, unitName, fatherName, motherName, address, bloodGroup,  phone, emergency_contact, image_url, scout_type, registered_by)
+    INSERT INTO scouts (email, password, name, name_bangla, age, bsID, unitName, fatherName, motherName, address, bloodGroup,  phone, emergency_contact, image_url, scout_type, payment_amount,  registered_by)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
@@ -139,6 +140,7 @@ const dbOps = {
       scoutData.emergency_contact || null,
       scoutData.image_url || null,
       scoutData.scout_type || "scout", // Default to 'scout' if not provided
+      scoutData.paymentAmount,
       adminId
     );
   },
@@ -163,6 +165,7 @@ const dbOps = {
       image_url,
       scout_type,
       registered_by,
+      payment_amount,
       created_at
     FROM scouts
     ORDER BY created_at DESC
@@ -173,6 +176,16 @@ const dbOps = {
   findScoutByEmail: (email) => {
     const stmt = db.prepare("SELECT * FROM scouts WHERE email = ?");
     return stmt.get(email);
+  },
+
+  deleteScoutById: (scoutId) => {
+    // First delete related food entries to maintain referential integrity
+    const deleteFoodStmt = db.prepare("DELETE FROM food WHERE scout_id = ?");
+    deleteFoodStmt.run(scoutId);
+
+    // Then delete the scout
+    const deleteScoutStmt = db.prepare("DELETE FROM scouts WHERE id = ?");
+    return deleteScoutStmt.run(scoutId);
   },
 
   // Camp operations

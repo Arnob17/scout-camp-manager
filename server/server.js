@@ -173,6 +173,45 @@ app.post("/api/scout/login", async (req, res) => {
   }
 });
 
+app.delete("/api/scouts/:id", authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ error: "Only admins can delete scouts" });
+    }
+
+    const scoutId = parseInt(req.params.id);
+
+    if (isNaN(scoutId) || scoutId <= 0) {
+      return res.status(400).json({ error: "Invalid scout ID" });
+    }
+
+    // Optional: Check if scout exists before deletion
+    // const scoutExists = dbOps
+    //   .prepare("SELECT id FROM scouts WHERE id = ?")
+    //   .get(scoutId);
+    // if (!scoutExists) {
+    //   return res.status(404).json({ error: "Scout not found" });
+    // }
+
+    const result = dbOps.deleteScoutById(scoutId);
+
+    if (result.changes === 0) {
+      return res
+        .status(404)
+        .json({ error: "Scout not found or already deleted" });
+    }
+
+    res.json({
+      message: "Scout deleted successfully",
+      deletedId: scoutId,
+      changes: result.changes,
+    });
+  } catch (error) {
+    console.error("Delete scout error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/api/scouts", authenticateToken, async (req, res) => {
   try {
     if (req.user.role !== "admin") {

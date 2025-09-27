@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Settings, UserPlus, Utensils, CheckCircle, XCircle, Search, X } from 'lucide-react';
+import { Users, Plus, Settings, UserPlus, Utensils, CheckCircle, XCircle, Search, X, AlertTriangle, Trash2 } from 'lucide-react';
 
 interface Scout {
   id: number;
@@ -15,6 +15,7 @@ interface Scout {
   bloodGroup: string;
   phone: string;
   emergency_contact: string | null;
+  payment_amount: string;
   image_url: string | null;
   scout_type: string;
   registered_by: number | null;
@@ -68,6 +69,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     age: '',
     phone: '',
     emergency_contact: '',
+    paymentAmount: "",
     image_url: '',
     scout_type: 'scout' // Default value
   });
@@ -126,6 +128,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const openModal = (scout: Scout) => setSelectedScout(scout);
   const closeModal = () => setSelectedScout(null);
 
+  const [deleteConfirm, setDeleteConfirm] = useState<Scout | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   useEffect(() => {
     fetchScouts();
     fetchCampInfo();
@@ -148,6 +153,44 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     }
   };
 
+  const deleteScout = async (scoutId: any) => {
+    if (!scoutId) return;
+
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${production_url}/api/scouts/${scoutId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete scout');
+      }
+
+      // Remove the scout from the local state
+      setScouts(prevScouts => prevScouts.filter(scout => scout.id !== scoutId));
+
+      // Close both modals
+      setSelectedScout(null);
+      setDeleteConfirm(null);
+
+      // Show success message
+      alert('Scout deleted successfully!');
+
+    } catch (error: any) {
+      console.error('Error deleting scout:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+
   const fetchCampInfo = async () => {
     try {
       const response = await fetch(`${production_url}/api/camp-info`);
@@ -163,6 +206,73 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     } catch (error) {
       console.error('Error fetching camp info:', error);
     }
+  };
+
+  const DeleteConfirmationModal = ({ scout, onConfirm, onCancel, isDeleting }: any) => {
+    if (!scout) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+        <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
+          <button
+            onClick={onCancel}
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+            disabled={isDeleting}
+          >
+            <X size={20} />
+          </button>
+
+          <div className="flex items-center mb-4">
+            <div className="bg-red-100 p-3 rounded-full mr-3">
+              <AlertTriangle className="text-red-600" size={24} />
+            </div>
+            <h3 className="text-lg font-semibold">Delete Scout</h3>
+          </div>
+
+          <p className="text-gray-600 mb-4">
+            Are you sure you want to delete <strong>{scout.name}</strong>? This action cannot be undone and will also delete all associated food records.
+          </p>
+
+          <div className="bg-red-50 border border-red-200 rounded p-3 mb-4">
+            <p className="text-red-700 text-sm">
+              <strong>Warning:</strong> This will permanently remove:
+            </p>
+            <ul className="text-red-600 text-sm list-disc list-inside mt-1">
+              <li>Scout profile information</li>
+              <li>All food distribution records</li>
+              <li>Registration data</li>
+            </ul>
+          </div>
+
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={onCancel}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+              disabled={isDeleting}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => onConfirm(scout.id)}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:bg-red-400 disabled:cursor-not-allowed flex items-center"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 size={16} className="mr-2" />
+                  Delete Scout
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const fetchFoodEntries = async () => {
@@ -217,6 +327,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
           age: '',
           phone: '',
           emergency_contact: '',
+          paymentAmount: '',
           image_url: '',
           scout_type: 'scout'
         });
@@ -527,9 +638,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                     <div>
                       <h2 className="text-2xl font-bold">{selectedScout.name}</h2>
                       <p className="text-gray-500">{selectedScout.email}</p>
-                      <span className="inline-block mt-1 text-sm bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                        {getScoutTypeLabel(selectedScout.scout_type)}
-                      </span>
+                      <div className="flex gap-2 mt-1">
+                        <span className="text-sm bg-green-100 text-green-700 w-[120px] h-[28px] rounded-full flex justify-center items-center">
+                          {getScoutTypeLabel(selectedScout.scout_type)}
+                        </span>
+                        <span className="text-sm bg-green-100 text-green-700 w-[120px] h-[28px] rounded-full flex justify-center items-center gap-1">
+                          <CheckCircle size={14} /> Registered
+                        </span>
+                      </div>
+                      <div className="mt-[10px] text-sm bg-purple-100 text-green-700 w-[120px] h-[28px] rounded-full flex justify-center items-center">
+                        Fee - {selectedScout.payment_amount || 1000}tk
+                      </div>
                     </div>
                   </div>
 
@@ -548,9 +667,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                     <div><strong>Registered By (Admin ID):</strong> {selectedScout.registered_by ?? "Unknown"}</div>
                     <div><strong>Created At:</strong> {new Date(selectedScout.created_at).toLocaleString()}</div>
                   </div>
+
+                  {/* Add delete button at the bottom of the modal */}
+                  <div className="flex justify-end mt-6 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => { setDeleteConfirm(selectedScout); closeModal() }}
+                      className="flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    >
+                      <Trash2 size={16} className="mr-2" />
+                      Delete Scout
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
+
+            {/* Add the confirmation modal */}
+            <DeleteConfirmationModal
+              scout={deleteConfirm}
+              onConfirm={deleteScout}
+              onCancel={() => setDeleteConfirm(null)}
+              isDeleting={isDeleting}
+            />
 
 
             {activeTab === 'register' && (
@@ -593,6 +731,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                         value={newScout.email}
                         onChange={(e) => setNewScout({ ...newScout, email: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-red-700 mb-2">
+                        Payment Amount *
+                      </label>
+                      <input
+                        type="text"
+                        value={newScout.paymentAmount}
+                        onChange={(e) => setNewScout({ ...newScout, paymentAmount: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        required
                       />
                     </div>
 
