@@ -30,11 +30,18 @@ const createTables = () => {
   const createScoutsTable = db.prepare(`
     CREATE TABLE IF NOT EXISTS scouts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE,
+    bsID TEXT NOT NULL,
     password TEXT NOT NULL,
+    unitName TEXT NOT NULL,
     name TEXT NOT NULL,
-    age INTEGER,
-    phone TEXT,
+    name_bangla TEXT NOT NULL,
+    age TEXT NOT NULL,
+    fatherName TEXT NOT NULL,
+    motherName TEXT NOT NULL,
+    address TEXT NOT NULL,
+    bloodGroup TEXT NOT NULL,
+    phone TEXT NOT NULL,
     emergency_contact TEXT,
     image_url TEXT,
     scout_type TEXT DEFAULT 'scout',
@@ -112,15 +119,22 @@ const dbOps = {
   // Scout operations
   createScout: (scoutData, adminId) => {
     const stmt = db.prepare(`
-    INSERT INTO scouts (email, password, name, age, phone, emergency_contact, image_url, scout_type, registered_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO scouts (email, password, name, name_bangla, age, bsID, unitName, fatherName, motherName, address, bloodGroup,  phone, emergency_contact, image_url, scout_type, registered_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
     return stmt.run(
       scoutData.email,
       scoutData.password, // Make sure to hash this password
       scoutData.name,
+      scoutData.name_bangla,
       scoutData.age || null,
+      scoutData.bsID,
+      scoutData.unitName,
+      scoutData.fatherName,
+      scoutData.motherName,
+      scoutData.address,
+      scoutData.bloodGroup,
       scoutData.phone || null,
       scoutData.emergency_contact || null,
       scoutData.image_url || null,
@@ -132,8 +146,25 @@ const dbOps = {
   // And update the scout retrieval to include scout_type
   getAllScouts: () => {
     const stmt = db.prepare(`
-    SELECT id, email, name, age, phone, emergency_contact, image_url, scout_type, created_at 
-    FROM scouts 
+    SELECT 
+      id,
+      email,
+      bsID,
+      unitName,
+      name,
+      name_bangla,
+      age,
+      fatherName,
+      motherName,
+      address,
+      bloodGroup,
+      phone,
+      emergency_contact,
+      image_url,
+      scout_type,
+      registered_by,
+      created_at
+    FROM scouts
     ORDER BY created_at DESC
   `);
     return stmt.all();

@@ -107,7 +107,7 @@ app.post("/api/scout/register", authenticateToken, async (req, res) => {
 
     const scoutData = req.body;
 
-    if (!scoutData.email || !scoutData.password || !scoutData.name) {
+    if (!scoutData.password || !scoutData.name) {
       return res
         .status(400)
         .json({ error: "Email, password, and name are required" });
@@ -131,6 +131,8 @@ app.post("/api/scout/register", authenticateToken, async (req, res) => {
         name: scoutData.name,
       },
     });
+
+    console.log(result);
   } catch (error) {
     console.error("Scout registration error:", error);
     res.status(500).json({ error: "Internal server error" });
