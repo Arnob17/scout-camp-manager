@@ -99,8 +99,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredScouts, setFilteredScouts] = useState<Scout[]>([]);
 
-  // const production_url = `https://camp-backend-production.up.railway.app`;
-  const production_url = `http://localhost:3001`;
+  const production_url = `https://camp-backend-production.up.railway.app`;
+  // const production_url = `http://localhost:3001`;
   // Scout types
   const scoutTypes = [
     { value: 'cub', label: 'Cub Scout' },
@@ -161,7 +161,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     setIsUpdating(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/scouts/${scoutId}`, {
+      const response = await fetch(`${production_url}/api/scouts/${scoutId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -394,7 +394,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${}/api/camp-info', {
+      const response = await fetch(`${production_url}/api/camp-info`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -429,7 +429,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${}/api/food', {
+      const response = await fetch(`${production_url}/api/food`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
