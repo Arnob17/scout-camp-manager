@@ -20,9 +20,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
   return (
     <nav className="bg-[#E05127] text-white shadow-lg">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-[120px]">
+        <div className="flex justify-between items-center h-[100px]">
           <Link to="/" className="flex items-center space-x-2 hover:text-green-200 transition-colors">
-            <img src={logo} className='h-[110px] w-[110px] rounded-[1ch]' alt="" />
+            <img src={logo} className='h-[100px] w-[100px] rounded-[1ch]' alt="" />
           </Link>
 
           <div className="flex items-center space-x-6">
@@ -35,21 +35,21 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                 >
                   Home
                 </Link>
-                <Link
+                {/* <Link
                   to="/admin"
                   className={`flex items-center space-x-1 hover:text-green-200 transition-colors ${location.pathname.startsWith('/admin') ? 'text-green-200' : ''
                     }`}
                 >
                   <Shield size={16} />
                   <span>Admin</span>
-                </Link>
+                </Link> */}
                 <Link
                   to="/scout/login"
                   className={`flex items-center space-x-1 hover:text-green-200 transition-colors ${location.pathname.startsWith('/scout') ? 'text-green-200' : ''
                     }`}
                 >
                   <Users size={16} />
-                  <span>Scouts</span>
+                  <span>Login</span>
                 </Link>
               </>
             ) : (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Settings, UserPlus, Utensils, CheckCircle, XCircle, Search, X, AlertTriangle, Trash2 } from 'lucide-react';
+import { Users, Plus, Settings, UserPlus, Utensils, CheckCircle, XCircle, Search, X, AlertTriangle, Trash2, Edit, Save } from 'lucide-react';
 
 interface Scout {
   id: number;
@@ -131,6 +131,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [deleteConfirm, setDeleteConfirm] = useState<Scout | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [editScout, setEditScout] = useState<any | null>(null)
+  const [isUpdating, setIsUpdating] = useState(false);
+
   useEffect(() => {
     fetchScouts();
     fetchCampInfo();
@@ -150,6 +153,47 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       }
     } catch (error) {
       console.error('Error fetching scouts:', error);
+    }
+  };
+
+
+  const updateScout = async (scoutId: any, updateData: any) => {
+    setIsUpdating(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/scouts/${scoutId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update scout');
+      }
+
+      const result = await response.json();
+
+      // Update local state
+      setScouts(prevScouts =>
+        prevScouts.map(scout =>
+          scout.id === scoutId ? result.scout : scout
+        )
+      );
+
+      // Close edit modal and refresh selected scout
+      setEditScout(null);
+      setSelectedScout(result.scout);
+
+      return result;
+    } catch (error) {
+      console.error('Error updating scout:', error);
+      throw error;
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -668,16 +712,268 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                     <div><strong>Created At:</strong> {new Date(selectedScout.created_at).toLocaleString()}</div>
                   </div>
 
-                  {/* Add delete button at the bottom of the modal */}
-                  <div className="flex justify-end mt-6 pt-4 border-t border-gray-200">
+                  {/* Action buttons */}
+                  <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                     <button
-                      onClick={() => { setDeleteConfirm(selectedScout); closeModal() }}
+                      onClick={() => { setEditScout({ ...selectedScout }); closeModal() }}
+                      className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      <Edit size={16} className="mr-2" />
+                      Edit Scout
+                    </button>
+                    <button
+                      onClick={() => { setDeleteConfirm(selectedScout); closeModal(); }}
                       className="flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                     >
                       <Trash2 size={16} className="mr-2" />
                       Delete Scout
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Edit Scout Modal */}
+            {editScout && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+                <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+                  <button
+                    onClick={() => setEditScout(null)}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                    disabled={isUpdating}
+                  >
+                    <X size={20} />
+                  </button>
+
+                  <h2 className="text-2xl font-bold mb-6">Edit Scout Information</h2>
+
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    try {
+                      await updateScout(editScout.id, editScout);
+                      alert('Scout updated successfully!');
+                    } catch (error: any) {
+                      alert(`Error: ${error.message}`);
+                    }
+                  }}>
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Basic Information */}
+                      <div className="col-span-2">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-700">Basic Information</h3>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                        <input
+                          type="text"
+                          value={editScout.name || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, name: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Name (Bangla)</label>
+                        <input
+                          type="text"
+                          value={editScout.name_bangla || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, name_bangla: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input
+                          type="email"
+                          value={editScout.email || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, email: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">BS ID *</label>
+                        <input
+                          type="text"
+                          value={editScout.bsID || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, bsID: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Unit Name *</label>
+                        <input
+                          type="text"
+                          value={editScout.unitName || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, unitName: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                        <input
+                          type="text"
+                          value={editScout.age || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, age: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="DD/MM/YYYY"
+                        />
+                      </div>
+
+                      {/* Contact Information */}
+                      <div className="col-span-2 mt-4">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-700">Contact Information</h3>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input
+                          type="text"
+                          value={editScout.phone || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, phone: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                        <input
+                          type="text"
+                          value={editScout.emergency_contact || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, emergency_contact: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      {/* Family Information */}
+                      <div className="col-span-2 mt-4">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-700">Family Information</h3>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
+                        <input
+                          type="text"
+                          value={editScout.fatherName || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, fatherName: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
+                        <input
+                          type="text"
+                          value={editScout.motherName || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, motherName: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <textarea
+                          value={editScout.address || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, address: e.target.value }))}
+                          rows={3}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      {/* Additional Information */}
+                      <div className="col-span-2 mt-4">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-700">Additional Information</h3>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+                        <select
+                          value={editScout.bloodGroup || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, bloodGroup: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select Blood Group</option>
+                          <option value="A+">A+</option>
+                          <option value="A-">A-</option>
+                          <option value="B+">B+</option>
+                          <option value="B-">B-</option>
+                          <option value="AB+">AB+</option>
+                          <option value="AB-">AB-</option>
+                          <option value="O+">O+</option>
+                          <option value="O-">O-</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Scout Type</label>
+                        <select
+                          value={editScout.scout_type || 'scout'}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, scout_type: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="scout">Scout</option>
+                          <option value="rover">Rover</option>
+                          <option value="leader">Leader</option>
+                          <option value="volunteer">Volunteer</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Payment Amount (tk)</label>
+                        <input
+                          type="number"
+                          value={editScout.payment_amount || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, payment_amount: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                        <input
+                          type="url"
+                          value={editScout.image_url || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, image_url: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                      <button
+                        type="button"
+                        onClick={() => setEditScout(null)}
+                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                        disabled={isUpdating}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isUpdating}
+                        className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-green-400 disabled:cursor-not-allowed"
+                      >
+                        {isUpdating ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Updating...
+                          </>
+                        ) : (
+                          <>
+                            <Save size={16} className="mr-2" />
+                            Update Scout
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             )}

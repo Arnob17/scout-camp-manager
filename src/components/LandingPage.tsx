@@ -44,19 +44,19 @@ const LandingPage: React.FC = () => {
       <div className="relative text-white">
         <img src={camp} className="absolute inset-0 w-full h-full object-cover" />
         <div className="relative container mx-auto px-4 py-24">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold mb-6">
+          <div className="text-center max-w-4xl mx-auto text-black font-[bolder]">
+            <h1 className="text-5xl text-white font-bold mb-6">
               {campInfo?.camp_name || 'Scout Adventure Camp'}
             </h1>
-            <p className="text-xl mb-8 opacity-90">
+            <p className="text-[30px] font-[bolder] text-white  mb-8 opacity-90">
               {campInfo?.description || 'Join us for an unforgettable outdoor adventure!'}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="bg-white bg-opacity-20 px-6 py-3 rounded-lg flex items-center space-x-2">
+              <div className="bg-white px-6 py-3 rounded-lg flex items-center space-x-2">
                 <Calendar size={20} />
                 <span>{campInfo?.camp_date || 'Coming Soon'}</span>
               </div>
-              <div className="bg-white bg-opacity-20 px-6 py-3 rounded-lg flex items-center space-x-2">
+              <div className="bg-white px-6 py-3 rounded-lg flex items-center space-x-2">
                 <MapPin size={20} />
                 <span>{campInfo?.location || 'Location TBD'}</span>
               </div>

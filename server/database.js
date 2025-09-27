@@ -173,6 +173,79 @@ const dbOps = {
     return stmt.all();
   },
 
+  // In your database.js file, add this to dbOps object:
+
+  // Update scout information
+  updateScout: (scoutId, scoutData) => {
+    const stmt = db.prepare(`
+    UPDATE scouts 
+    SET 
+      email = ?, 
+      bsID = ?, 
+      unitName = ?, 
+      name = ?, 
+      name_bangla = ?, 
+      age = ?, 
+      fatherName = ?, 
+      motherName = ?, 
+      address = ?, 
+      bloodGroup = ?, 
+      phone = ?, 
+      emergency_contact = ?, 
+      image_url = ?, 
+      payment_amount = ?,
+      scout_type = ?
+    WHERE id = ?
+  `);
+
+    return stmt.run(
+      scoutData.email,
+      scoutData.bsID,
+      scoutData.unitName,
+      scoutData.name,
+      scoutData.name_bangla,
+      scoutData.age || null,
+      scoutData.fatherName,
+      scoutData.motherName,
+      scoutData.address,
+      scoutData.bloodGroup,
+      scoutData.phone || null,
+      scoutData.emergency_contact || null,
+      scoutData.image_url || null,
+      scoutData.payment_amount,
+      scoutData.scout_type || "scout",
+      scoutId
+    );
+  },
+
+  // Get scout by ID (useful for update operations)
+  getScoutById: (scoutId) => {
+    const stmt = db.prepare(`
+    SELECT 
+      id,
+      email,
+      bsID,
+      unitName,
+      name,
+      name_bangla,
+      age,
+      fatherName,
+      motherName,
+      address,
+      bloodGroup,
+      phone,
+      emergency_contact,
+      image_url,
+      scout_type,
+      payment_amount,
+      registered_by,
+      created_at
+    FROM scouts 
+    WHERE id = ?
+  `);
+    return stmt.get(scoutId);
+  },
+
   findScoutByEmail: (email) => {
     const stmt = db.prepare("SELECT * FROM scouts WHERE email = ?");
     return stmt.get(email);
