@@ -553,58 +553,63 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md">
           <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
+            <nav className="flex overflow-x-auto md:overflow-visible space-x-4 md:space-x-8 px-4 md:px-6 border-b">
               <button
                 onClick={() => setActiveTab('scouts')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === 'scouts'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'scouts'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Users size={16} />
-                <span>Scouts ({scouts.length})</span>
+                <span className="whitespace-nowrap">Scouts ({scouts.length})</span>
               </button>
+
               <button
                 onClick={() => setActiveTab('register')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === 'register'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'register'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <UserPlus size={16} />
-                <span>Register Scout</span>
+                <span className="whitespace-nowrap">Register Scout</span>
               </button>
+
               <button
                 onClick={() => setActiveTab('food')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === 'food'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'food'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Utensils size={16} />
-                <span>Food Management</span>
+                <span className="whitespace-nowrap">Food Management</span>
               </button>
+
               <button
                 onClick={() => setActiveTab('kits')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === 'kits'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'kits'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Settings size={16} />
-                <span>Kits management</span>
+                <span className="whitespace-nowrap">Kits Management</span>
               </button>
+
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === 'settings'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'settings'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Settings size={16} />
-                <span>Camp Settings</span>
+                <span className="whitespace-nowrap">Camp Settings</span>
               </button>
             </nav>
+
           </div>
 
           <div className="p-6">

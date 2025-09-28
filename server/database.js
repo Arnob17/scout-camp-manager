@@ -275,13 +275,59 @@ const dbOps = {
   },
 
   deleteScoutById: (scoutId) => {
-    // First delete related food entries to maintain referential integrity
-    const deleteFoodStmt = db.prepare("DELETE FROM food WHERE scout_id = ?");
-    deleteFoodStmt.run(scoutId);
+    // Use a transaction to ensure all operations succeed or fail together
+    const deleteScoutTransaction = db.transaction(() => {
+      try {
+        // First delete related food entries
+        const deleteFoodStmt = db.prepare(
+          "DELETE FROM food WHERE scout_id = ?"
+        );
+        const foodResult = deleteFoodStmt.run(scoutId);
+        console.log(
+          `Deleted ${foodResult.changes} food entries for scout ${scoutId}`
+        );
 
-    // Then delete the scout
-    const deleteScoutStmt = db.prepare("DELETE FROM scouts WHERE id = ?");
-    return deleteScoutStmt.run(scoutId);
+        // Then delete related kit entries
+        const deleteKitStmt = db.prepare(
+          "DELETE FROM scout_kits WHERE scout_id = ?"
+        );
+        const kitResult = deleteKitStmt.run(scoutId);
+        console.log(
+          `Deleted ${kitResult.changes} kit entries for scout ${scoutId}`
+        );
+
+        // Finally delete the scout
+        const deleteScoutStmt = db.prepare("DELETE FROM scouts WHERE id = ?");
+        const scoutResult = deleteScoutStmt.run(scoutId);
+
+        if (scoutResult.changes === 0) {
+          throw new Error(`Scout with ID ${scoutId} not found`);
+        }
+
+        console.log(`Successfully deleted scout ${scoutId}`);
+        return {
+          success: true,
+          changes: scoutResult.changes,
+          deletedFoodEntries: foodResult.changes,
+          deletedKitEntries: kitResult.changes,
+          message: `Scout deleted successfully along with ${foodResult.changes} food entries and ${kitResult.changes} kit entries`,
+        };
+      } catch (error) {
+        console.error("Error deleting scout:", error);
+        throw error; // Re-throw to trigger transaction rollback
+      }
+    });
+
+    try {
+      return deleteScoutTransaction();
+    } catch (error) {
+      return {
+        success: false,
+        changes: 0,
+        error: error.message,
+        message: `Failed to delete scout: ${error.message}`,
+      };
+    }
   },
 
   // Camp operations
