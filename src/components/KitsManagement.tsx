@@ -47,10 +47,10 @@ const KitManagement = () => {
             setFilteredScouts(scouts);
         } else {
             const filtered = scouts.filter((scout: any) =>
-                scout.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                scout.bsID.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                scout.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                scout.unitName.toLowerCase().includes(searchTerm.toLowerCase())
+                (scout.name && scout.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (scout.bsID && scout.bsID.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (scout.email && scout.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (scout.unitName && scout.unitName.toLowerCase().includes(searchTerm.toLowerCase()))
             );
             setFilteredScouts(filtered);
         }
