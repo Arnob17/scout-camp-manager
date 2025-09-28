@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, Settings, UserPlus, Utensils, CheckCircle, XCircle, Search, X, AlertTriangle, Trash2, Edit, Save } from 'lucide-react';
-
+import KitManagement from './KitsManagement';
 interface Scout {
   id: number;
   email: string;
   bsID: string;         // ⚠️ only include if needed internally (e.g. for login), not for public API
   unitName: string;
+  password: string;
   name: string;
   name_bangla: string;
   age: number;                // or string if you're storing date — adjust accordingly
@@ -50,7 +51,7 @@ interface AdminDashboardProps {
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [scouts, setScouts] = useState<Scout[]>([]);
   const [campInfo, setCampInfo] = useState<CampInfo | null>(null);
-  const [activeTab, setActiveTab] = useState<'scouts' | 'register' | 'settings' | 'food'>('scouts');
+  const [activeTab, setActiveTab] = useState<'scouts' | 'register' | 'settings' | 'food' | 'kits'>('scouts');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -99,8 +100,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredScouts, setFilteredScouts] = useState<Scout[]>([]);
 
-  // const production_url = `https://camp-backend-production.up.railway.app`;
-  const production_url = `http://localhost:3001`;
+  const production_url = `https://camp-backend-production.up.railway.app`;
+  // const production_url = `http://localhost:3001`;
   // Scout types
   const scoutTypes = [
     { value: 'cub', label: 'Cub Scout' },
@@ -584,6 +585,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                 <span>Food Management</span>
               </button>
               <button
+                onClick={() => setActiveTab('kits')}
+                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === 'kits'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+              >
+                <Settings size={16} />
+                <span>Kits management</span>
+              </button>
+              <button
                 onClick={() => setActiveTab('settings')}
                 className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === 'settings'
                   ? 'border-green-500 text-green-600'
@@ -799,6 +810,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                           type="text"
                           value={editScout.bsID || ''}
                           onChange={(e) => setEditScout((prev: any) => ({ ...prev, bsID: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                        <input
+                          type="text"
+                          value={editScout.password || ''}
+                          onChange={(e) => setEditScout((prev: any) => ({ ...prev, password: e.target.value }))}
                           className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                           required
                         />
@@ -1455,6 +1477,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                   </div>
                 )}
               </div>
+            )}
+
+            {activeTab === 'kits' && (
+              <>
+                <KitManagement />
+              </>
             )}
 
             {activeTab === 'settings' && (
