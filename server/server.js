@@ -114,12 +114,12 @@ app.post("/api/scout/register", authenticateToken, async (req, res) => {
     }
 
     // Check if scout already exists
-    const existingScout = dbOps.findScoutByEmail(scoutData.email);
-    if (existingScout) {
-      return res
-        .status(409)
-        .json({ error: "Scout with this email already exists" });
-    }
+    // const existingScout = dbOps.findScoutByEmail(scoutData.email);
+    // if (existingScout) {
+    //   return res
+    //     .status(409)
+    //     .json({ error: "Scout with this email already exists" });
+    // }
 
     const result = dbOps.createScout(scoutData, req.user.id);
 
@@ -132,7 +132,7 @@ app.post("/api/scout/register", authenticateToken, async (req, res) => {
       },
     });
 
-    console.log(result);
+    // console.log(result);
   } catch (error) {
     console.error("Scout registration error:", error);
     res.status(500).json({ error: "Internal server error" });

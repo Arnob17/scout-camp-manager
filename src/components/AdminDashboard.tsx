@@ -99,8 +99,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredScouts, setFilteredScouts] = useState<Scout[]>([]);
 
-  const production_url = `https://camp-backend-production.up.railway.app`;
-  // const production_url = `http://localhost:3001`;
+  // const production_url = `https://camp-backend-production.up.railway.app`;
+  const production_url = `http://localhost:3001`;
   // Scout types
   const scoutTypes = [
     { value: 'cub', label: 'Cub Scout' },

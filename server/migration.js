@@ -1,53 +1,51 @@
-// run-migration.js
 import Database from "better-sqlite3";
-import { fileURLToPath } from "url";
 import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const db = new Database(path.join(__dirname, "scouts.db"));
+const dbPath = path.join(__dirname, "scouts.db");
+const db = new Database(dbPath);
 
-// Helper to add column safely
-function addColumnIfNotExists(table, column, definition) {
-  try {
-    console.log(`Adding column '${column}' to '${table}'...`);
-    const stmt = db.prepare(`ALTER TABLE ${table} ADD COLUMN ${column}`);
-    stmt.run();
-    console.log(`✅ Column '${column}' added successfully.`);
-  } catch (error) {
-    if (error.message.includes("duplicate column name")) {
-      console.log(`ℹ️ Column '${column}' already exists, skipping.`);
-    } else {
-      console.error(`❌ Error adding column '${column}':`, error.message);
-    }
-  }
-}
+// Enable WAL mode
+db.pragma("journal_mode = WAL");
 
 try {
-  // List of new columns to add
-  // addColumnIfNotExists("scouts", "bsID", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "unitName", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "name_bangla", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "age", "INTEGER");
-  addColumnIfNotExists("scouts", "payment_amount", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "motherName", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "address", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "bloodGroup", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "phone", "TEXT NOT NULL");
-  // addColumnIfNotExists("scouts", "emergency_contact", "TEXT");
-  // addColumnIfNotExists("scouts", "image_url", "TEXT");
-  // addColumnIfNotExists("scouts", "scout_type", "TEXT DEFAULT 'scout'");
-  // addColumnIfNotExists("scouts", "registered_by", "INTEGER");
-  // addColumnIfNotExists(
-  //   "scouts",
-  //   "created_at",
-  //   "DATETIME DEFAULT CURRENT_TIMESTAMP"
-  // );
+  console.log("🛠 Dropping existing 'scouts' table if it exists...");
+  db.prepare(`DROP TABLE IF EXISTS scouts`).run();
 
-  console.log("🎉 Migration completed successfully!");
+  console.log("✅ Creating new 'scouts' table...");
+  db.prepare(
+    `
+    CREATE TABLE scouts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT, -- nullable
+      password TEXT NOT NULL,
+      bsID TEXT NOT NULL,
+      unitName TEXT NOT NULL,
+      name TEXT NOT NULL,
+      name_bangla TEXT NOT NULL,
+      age TEXT,
+      fatherName TEXT NOT NULL,
+      motherName TEXT NOT NULL,
+      address TEXT NOT NULL,
+      bloodGroup TEXT,
+      phone TEXT,
+      emergency_contact TEXT,
+      image_url TEXT,
+      payment_amount TEXT NOT NULL,
+      scout_type TEXT DEFAULT 'scout',
+      registered_by INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (registered_by) REFERENCES admins (id)
+    )
+  `
+  ).run();
+
+  console.log("🎉 Migration completed successfully! 'scouts' table is ready.");
 } catch (err) {
-  console.error("Migration failed:", err.message);
+  console.error("❌ Migration failed:", err.message);
 } finally {
   db.close();
 }

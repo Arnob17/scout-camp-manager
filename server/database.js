@@ -78,6 +78,26 @@ const createTables = () => {
   )
 `);
 
+  const createKitsTable = db.prepare(`
+  CREATE TABLE IF NOT EXISTS scout_kits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    scout_id INTEGER NOT NULL,
+    tshirt INTEGER DEFAULT 0, -- 0 = not received, 1 = received
+    scarf INTEGER DEFAULT 0,
+    waggle INTEGER DEFAULT 0,
+    keychain INTEGER DEFAULT 0,
+    pen INTEGER DEFAULT 0,
+    notes TEXT,
+    issued_by INTEGER,
+    issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (scout_id) REFERENCES scouts (id),
+    FOREIGN KEY (issued_by) REFERENCES admins (id),
+    UNIQUE(scout_id)
+  )
+`);
+
+  createKitsTable.run();
   createFoodTable.run();
   createAdminsTable.run();
   createScoutsTable.run();
@@ -121,11 +141,11 @@ const dbOps = {
   createScout: (scoutData, adminId) => {
     const stmt = db.prepare(`
     INSERT INTO scouts (email, password, name, name_bangla, age, bsID, unitName, fatherName, motherName, address, bloodGroup,  phone, emergency_contact, image_url, scout_type, payment_amount,  registered_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
     return stmt.run(
-      scoutData.email,
+      scoutData.email || null,
       scoutData.password, // Make sure to hash this password
       scoutData.name,
       scoutData.name_bangla,
@@ -322,6 +342,125 @@ const dbOps = {
       ORDER BY food_date DESC, food_time
     `);
     return stmt.all(scoutId);
+  },
+
+  //kits
+  createOrUpdateKit: (scoutId, kitData, adminId) => {
+    // Check if kit already exists for this scout
+    const existingKit = dbOps.getKitByScoutId(scoutId);
+
+    if (existingKit) {
+      // Update existing kit
+      const stmt = db.prepare(`
+        UPDATE scout_kits 
+        SET 
+          tshirt = ?, 
+          scarf = ?, 
+          waggle = ?, 
+          keychain = ?, 
+          pen = ?, 
+          notes = ?,
+          issued_by = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE scout_id = ?
+      `);
+
+      return stmt.run(
+        kitData.tshirt ? 1 : 0,
+        kitData.scarf ? 1 : 0,
+        kitData.waggle ? 1 : 0,
+        kitData.keychain ? 1 : 0,
+        kitData.pen ? 1 : 0,
+        kitData.notes || null,
+        adminId,
+        scoutId
+      );
+    } else {
+      // Create new kit
+      const stmt = db.prepare(`
+        INSERT INTO scout_kits (
+          scout_id, tshirt, scarf, waggle, keychain, pen, notes, issued_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      return stmt.run(
+        scoutId,
+        kitData.tshirt ? 1 : 0,
+        kitData.scarf ? 1 : 0,
+        kitData.waggle ? 1 : 0,
+        kitData.keychain ? 1 : 0,
+        kitData.pen ? 1 : 0,
+        kitData.notes || null,
+        adminId
+      );
+    }
+  },
+
+  getKitByScoutId: (scoutId) => {
+    const stmt = db.prepare(`
+      SELECT 
+        k.*,
+        s.name as scout_name,
+        s.bsID as scout_bsid,
+        s.unitName as scout_unit,
+        a.name as issued_by_name
+      FROM scout_kits k
+      LEFT JOIN scouts s ON k.scout_id = s.id
+      LEFT JOIN admins a ON k.issued_by = a.id
+      WHERE k.scout_id = ?
+    `);
+    return stmt.get(scoutId);
+  },
+
+  getAllKits: () => {
+    const stmt = db.prepare(`
+      SELECT 
+        k.*,
+        s.name as scout_name,
+        s.bsID as scout_bsid,
+        s.unitName as scout_unit,
+        s.email as scout_email,
+        a.name as issued_by_name
+      FROM scout_kits k
+      LEFT JOIN scouts s ON k.scout_id = s.id
+      LEFT JOIN admins a ON k.issued_by = a.id
+      ORDER BY k.issued_at DESC
+    `);
+    return stmt.all();
+  },
+
+  getKitsSummary: () => {
+    const stmt = db.prepare(`
+      SELECT 
+        COUNT(*) as total_kits,
+        SUM(tshirt) as tshirt_count,
+        SUM(scarf) as scarf_count,
+        SUM(waggle) as waggle_count,
+        SUM(keychain) as keychain_count,
+        SUM(pen) as pen_count
+      FROM scout_kits
+    `);
+    return stmt.get();
+  },
+
+  updateKitItem: (scoutId, item, received, adminId) => {
+    const validItems = ["tshirt", "scarf", "waggle", "keychain", "pen"];
+    if (!validItems.includes(item)) {
+      throw new Error("Invalid kit item");
+    }
+
+    const stmt = db.prepare(`
+      INSERT OR REPLACE INTO scout_kits 
+        (scout_id, ${item}, issued_by, updated_at)
+      VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+    `);
+
+    return stmt.run(scoutId, received ? 1 : 0, adminId);
+  },
+
+  deleteKit: (scoutId) => {
+    const stmt = db.prepare("DELETE FROM scout_kits WHERE scout_id = ?");
+    return stmt.run(scoutId);
   },
 
   // Utility
