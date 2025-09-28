@@ -16,9 +16,9 @@ const KitManagement = () => {
     const fetchData = async () => {
         try {
             const token = localStorage.getItem('token');
-
+            const production_url = `https://camp-backend-production.up.railway.app`;
             // Fetch kits
-            const kitsResponse = await fetch('/api/kits', {
+            const kitsResponse = await fetch(`${production_url}/api/kits`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!kitsResponse.ok) throw new Error('Failed to fetch kits');
@@ -27,7 +27,7 @@ const KitManagement = () => {
             setSummary(kitsData.summary);
 
             // Fetch scouts
-            const scoutsResponse = await fetch('/api/scouts', {
+            const scoutsResponse = await fetch(`${production_url}/api/scouts`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!scoutsResponse.ok) throw new Error('Failed to fetch scouts');
@@ -60,7 +60,7 @@ const KitManagement = () => {
     const updateKitItem = async (scoutId: any, item: any, received: any) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`/api/kits/scout/${scoutId}/item/${item}`, {
+            const response = await fetch(`https://camp-backend-production.up.railway.app/api/kits/scout/${scoutId}/item/${item}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -82,7 +82,7 @@ const KitManagement = () => {
     const saveKit = async (scoutId: any, kitData: any) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`/api/kits/scout/${scoutId}`, {
+            const response = await fetch(`https://camp-backend-production.up.railway.app/api/kits/scout/${scoutId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
