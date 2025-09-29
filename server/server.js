@@ -227,6 +227,20 @@ app.get("/api/scouts", authenticateToken, async (req, res) => {
   }
 });
 
+app.get("/api/scouts/:id", authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ error: "Only admins can view all scouts" });
+    }
+
+    const scouts = dbOps.getScoutById(req.params.id);
+    res.json(scouts);
+  } catch (error) {
+    console.error("Get scouts error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.put("/api/scouts/:id", authenticateToken, async (req, res) => {
   try {
     if (req.user.role !== "admin") {

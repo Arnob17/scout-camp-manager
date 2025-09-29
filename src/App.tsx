@@ -7,6 +7,7 @@ import AdminDashboard from './components/AdminDashboard';
 import ScoutAuth from './components/ScoutAuth';
 import ScoutProfile from './components/ScoutProfile';
 import Footer from './components/Footer';
+import MoneyReceipt from './components/money_reciept';
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -81,6 +82,13 @@ function App() {
               ) : (
                 <Navigate to="/admin" replace />
               )
+            }
+          />
+
+          <Route
+            path="/money"
+            element={
+              <MoneyReceipt />
             }
           />
 

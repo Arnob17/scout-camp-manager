@@ -499,22 +499,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     setSearchQuery('');
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
+  const searchScouts = (scouts: any[], query: string) => {
+    if (!query.trim()) return scouts;
 
-    if (query === '') {
-      setFilteredScouts(scouts);
-    } else {
-      const filtered = scouts.filter(scout =>
-        scout.name.toLowerCase().includes(query) ||
-        scout.email.toLowerCase().includes(query) ||
-        scout.id.toString().includes(query) ||
-        (scout.phone && scout.phone.includes(query)) ||
-        scout.scout_type.toLowerCase().includes(query)
+    return scouts.filter(scout => {
+      const searchFields = [
+        scout.name,
+        scout.email,
+        scout.id?.toString(),
+        scout.phone,
+        scout.scout_type,
+        scout.bsID,
+        scout.unitName,
+        scout.fatherName
+      ];
+
+      return searchFields.some(field =>
+        field && field.toString().toLowerCase().includes(query.toLowerCase())
       );
-      setFilteredScouts(filtered);
-    }
+    });
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    setFilteredScouts(searchScouts(scouts, query));
   };
 
   const selectScout = (scout: Scout) => {
@@ -557,8 +566,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <button
                 onClick={() => setActiveTab('scouts')}
                 className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'scouts'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Users size={16} />
@@ -568,8 +577,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <button
                 onClick={() => setActiveTab('register')}
                 className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'register'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <UserPlus size={16} />
@@ -579,8 +588,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <button
                 onClick={() => setActiveTab('food')}
                 className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'food'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Utensils size={16} />
@@ -590,8 +599,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <button
                 onClick={() => setActiveTab('kits')}
                 className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'kits'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Settings size={16} />
@@ -601,8 +610,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <button
                 onClick={() => setActiveTab('settings')}
                 className={`flex-shrink-0 py-3 px-2 border-b-2 font-medium text-sm flex items-center space-x-1 md:space-x-2 ${activeTab === 'settings'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
               >
                 <Settings size={16} />
