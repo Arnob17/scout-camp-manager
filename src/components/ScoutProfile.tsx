@@ -112,7 +112,7 @@ const ScoutProfile: React.FC<ScoutProfileProps> = ({ user }) => {
         <div className="max-w-6xl mx-auto">
           {/* Profile Header */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-6 flex-wrap ">
               {user.image_url ? (
                 <img
                   src={user.image_url}
@@ -146,8 +146,8 @@ const ScoutProfile: React.FC<ScoutProfileProps> = ({ user }) => {
                 <button
                   onClick={() => setActiveTab('profile')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'profile'
-                      ? 'bg-white text-green-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   Profile
@@ -155,8 +155,8 @@ const ScoutProfile: React.FC<ScoutProfileProps> = ({ user }) => {
                 <button
                   onClick={() => setActiveTab('kit')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'kit'
-                      ? 'bg-white text-green-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   Kit Status
@@ -164,8 +164,8 @@ const ScoutProfile: React.FC<ScoutProfileProps> = ({ user }) => {
                 <button
                   onClick={() => setActiveTab('food')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'food'
-                      ? 'bg-white text-green-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   Food History
@@ -335,16 +335,16 @@ const ScoutProfile: React.FC<ScoutProfileProps> = ({ user }) => {
                       <div
                         key={item.key}
                         className={`border rounded-lg p-4 ${kitInfo[item.key as keyof KitInfo]
-                            ? 'border-green-200 bg-green-50'
-                            : 'border-red-200 bg-red-50'
+                          ? 'border-green-200 bg-green-50'
+                          : 'border-red-200 bg-red-50'
                           }`}
                       >
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-gray-900">{item.label}</h3>
                           <div
                             className={`w-8 h-8 rounded-full flex items-center justify-center ${kitInfo[item.key as keyof KitInfo]
-                                ? 'bg-green-100 text-green-600'
-                                : 'bg-red-100 text-red-600'
+                              ? 'bg-green-100 text-green-600'
+                              : 'bg-red-100 text-red-600'
                               }`}
                           >
                             {kitInfo[item.key as keyof KitInfo] ? (
@@ -356,8 +356,8 @@ const ScoutProfile: React.FC<ScoutProfileProps> = ({ user }) => {
                         </div>
                         <p
                           className={`text-sm mt-2 ${kitInfo[item.key as keyof KitInfo]
-                              ? 'text-green-700'
-                              : 'text-red-700'
+                            ? 'text-green-700'
+                            : 'text-red-700'
                             }`}
                         >
                           {kitInfo[item.key as keyof KitInfo] ? 'Received' : 'Not Received'}
@@ -382,10 +382,10 @@ const ScoutProfile: React.FC<ScoutProfileProps> = ({ user }) => {
                       </div>
                       <div
                         className={`px-3 py-1 rounded-full text-sm font-medium ${kitItems.filter(item => kitInfo[item.key as keyof KitInfo]).length === kitItems.length
-                            ? 'bg-green-100 text-green-800'
-                            : kitItems.filter(item => kitInfo[item.key as keyof KitInfo]).length > 0
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
+                          ? 'bg-green-100 text-green-800'
+                          : kitItems.filter(item => kitInfo[item.key as keyof KitInfo]).length > 0
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-red-100 text-red-800'
                           }`}
                       >
                         {kitItems.filter(item => kitInfo[item.key as keyof KitInfo]).length === kitItems.length
